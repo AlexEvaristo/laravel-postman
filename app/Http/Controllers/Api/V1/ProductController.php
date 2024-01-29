@@ -12,6 +12,7 @@ class ProductController extends Controller
 {
     private $product;
     private $totalPage = 5;
+
     public function __construct(Products $product)
     {
         $this->product = $product;
@@ -21,7 +22,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //limitando a quantidaded de Página que poderão ser abertas
+        //limitando a quantidade de Página que poderão ser abertas
         $products = $this->product->paginate($this->totalPage);
         return response()->json(['data' => $products]);
     }
@@ -46,7 +47,7 @@ class ProductController extends Controller
             return response()->json(['error' => 'error_insert'], 500);
 
         return response()->json($insert);
-        }
+    }
 
     /**
      * Display the specified resource.
@@ -104,7 +105,7 @@ class ProductController extends Controller
 
     public function search(Request $request)
     {
-        dd("Teste");
+        //dd("Teste");
         // Obter todos os dados da solicitação
         $data = $request->all();
 
@@ -119,10 +120,7 @@ class ProductController extends Controller
         }
 
         // Realiza a busca dos produtos
-        $products = $this->product->paginate($this->totalPage)
-                        ->where('name', $data['key-search'])
-                        ->orWhere('description', 'LIKE', "%{$data['key-search']}%")
-                        ->paginate($this->totalPage);
+        $products = $this->product->search($data, $this->totalPage);
 
         // Retorna os produtos encontrados
         return response()->json(['data' => $products]);
