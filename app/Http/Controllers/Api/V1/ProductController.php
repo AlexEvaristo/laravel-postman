@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Products;
 
 use function Laravel\Prompts\error;
+use function Laravel\Prompts\search;
 
 class ProductController extends Controller
 {
@@ -109,15 +110,15 @@ class ProductController extends Controller
         // Obter todos os dados da solicitação
         $data = $request->all();
 
-        // Validação dos dados
-        $validate = validator($data, $this->product->rulesSearch());
+         // Validação dos dados
+         $validate = validator($data, $this->product->rulesSearch());
 
-        if ($validate->fails()) {
-            // Se a validação falhar, retorna os erros
-            $messages = $validate->getMessageBag();
-
-            return response()->json(['validate.error', $messages]);
-        }
+          if ($validate->fails()) {
+              // Se a validação falhar, retorna os erros
+              $messages = $validate->getMessageBag()->toArray();
+              return response()->json(['errors' => $messages], 400);
+              //return response()->json(['validate.error', $messages]);
+          }
 
         // Realiza a busca dos produtos
         $products = $this->product->search($data, $this->totalPage);

@@ -22,15 +22,13 @@ class Products extends Model
     public function rulesSearch()
     {
         return [
-            'key-search' => 'O campo de pesquisa é Obrigatório!.',
+            'key-search' => 'required',
         ];
     }
 
     public function search($data, $totalPage)
     {
-        return $this
-                        ->paginate($this->totalPage)
-                        ->where('name', $data['key-search'])
+        return $this ->where('name', $data['key-search'])
                         ->orWhere('description', 'LIKE', "%{$data['key-search']}%")
                         ->paginate($totalPage);
     }
