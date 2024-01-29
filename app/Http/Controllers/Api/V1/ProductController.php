@@ -3,20 +3,22 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BuscarProdutoRequest;
 use Illuminate\Http\Request;
 use App\Models\Products;
+use App\Services\ProductService;
 
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\search;
 
 class ProductController extends Controller
 {
-    private $product;
-    private $totalPage = 5;
+    private ProductService $productService;
+    private int $totalPage = 5;
 
-    public function __construct(Products $product)
+    public function __construct(ProductService $product)
     {
-        $this->product = $product;
+        $this->productService = $product;
     }
     /**
      * Display a listing of the resource.
@@ -24,7 +26,7 @@ class ProductController extends Controller
     public function index()
     {
         //limitando a quantidade de Página que poderão ser abertas
-        $products = $this->product->paginate($this->totalPage);
+        $products = $this->productService->index()->paginate($this->totalPage);
         return response()->json(['data' => $products]);
     }
 
@@ -104,24 +106,18 @@ class ProductController extends Controller
     return response()->json(['response' => $delete]);
     }
 
-    public function search(Request $request)
+    public function search(BuscarProdutoRequest $request)
     {
-        //dd("Teste");
         // Obter todos os dados da solicitação
         $data = $request->all();
 
-         // Validação dos dados
-         $validate = validator($data, $this->product->rulesSearch());
-
-          if ($validate->fails()) {
-              // Se a validação falhar, retorna os erros
-              $messages = $validate->getMessageBag()->toArray();
-              return response()->json(['errors' => $messages], 400);
-              //return response()->json(['validate.error', $messages]);
-          }
-
         // Realiza a busca dos produtos
-        $products = $this->product->search($data, $this->totalPage);
+        // $products = $this->product->search(data: $data, totalPage: $this->totalPage, page: 1);
+        
+        // $productService = new ProductService();
+        // $products = $productService->search(data: $data, totalPage: $this->totalPage, page: 1);
+
+
 
         // Retorna os produtos encontrados
         return response()->json(['data' => $products]);
