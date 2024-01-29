@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Products;
 
+use function Laravel\Prompts\error;
 
 class ProductController extends Controller
 {
     private $product;
+    private $totalPage = 5;
     public function __construct(Products $product)
     {
         $this->product = $product;
@@ -19,7 +21,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = $this->product->all();
+        //limitando a quantidaded de Página que poderão ser abertas
+        $products = $this->product->paginate($this->totalPage);
         return response()->json(['data' => $products]);
     }
 
@@ -64,6 +67,7 @@ class ProductController extends Controller
     {
         //Validaçao
         $data = $request->all();
+
         $validate =  validator($data, $this->product->rules($id));
 
         if( $validate->fails() )
@@ -96,6 +100,32 @@ class ProductController extends Controller
         if( !$delete = $product->delete())
         return response()->json(['error'=> 'product_not_delete'], 500);
     return response()->json(['response' => $delete]);
-
     }
+
+    public function search(Request $request)
+    {
+        dd("Teste");
+        // Obter todos os dados da solicitação
+        $data = $request->all();
+
+        // Validação dos dados
+        $validate = validator($data, $this->product->rulesSearch());
+
+        if ($validate->fails()) {
+            // Se a validação falhar, retorna os erros
+            $messages = $validate->getMessageBag();
+
+            return response()->json(['validate.error', $messages]);
+        }
+
+        // Realiza a busca dos produtos
+        $products = $this->product->paginate($this->totalPage)
+                        ->where('name', $data['key-search'])
+                        ->orWhere('description', 'LIKE', "%{$data['key-search']}%")
+                        ->paginate($this->totalPage);
+
+        // Retorna os produtos encontrados
+        return response()->json(['data' => $products]);
+    }
+
 }

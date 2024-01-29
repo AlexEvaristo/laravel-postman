@@ -13,9 +13,16 @@ class Products extends Model
     ];
     public function rules($id)
     {
-        return[
+        return [
             'name'        => "required|min:3|max:100|unique:products,name,{$id},id",
             'description' => 'required|min:3|max:1500'
+        ];
+    }
+
+    public function rulesSearch()
+    {
+        return [
+            'key-search' => 'O campo de pesquisa é required.',
         ];
     }
 }
