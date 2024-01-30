@@ -4,9 +4,13 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BuscarProdutoRequest;
+use App\Http\Requests\AtualizaProdutoRequest;
+use App\Http\Requests\CadastroProdutoRequest;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
 use App\Models\Products;
 use App\Services\ProductService;
+use Illuminate\Http\JsonResponse;
 
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\search;
@@ -16,40 +20,31 @@ class ProductController extends Controller
     private ProductService $productService;
     private int $totalPage = 5;
 
+    /**
+     * @param ProductService $product 
+     * @return void 
+     */
     public function __construct(ProductService $product)
     {
         $this->productService = $product;
     }
     /**
-     * Display a listing of the resource.
+     * Exibir todos os Produtos.
      */
-    public function index()
+    public function index(BuscarProdutoRequest $request)
     {
         //limitando a quantidade de Página que poderão ser abertas
-        $products = $this->productService->index()->paginate($this->totalPage);
-        return response()->json(['data' => $products]);
+        $productService = $this->productService->index();
+        return response()->json(['data' => $productService]);
     }
 
       /**
-     * Store a newly created resource in storage.
+     * Armazene um recurso recém-criado.
      */
     public function store(Request $request)
     {
-        $data = $request->all();
-
-        $validate =  validator($data, $this->product->rules(''));
-
-        if($validate->fails() )
-        {
-
-            $messages = $validate->errors();
-            return response()->json(['validate.error', $messages]);
-        }
-
-        if ( !$insert = $this->product->create($data) )
-            return response()->json(['error' => 'error_insert'], 500);
-
-        return response()->json($insert);
+        $productService = $this->productService->store($request);
+        return response()->json(['data' => $productService]);
     }
 
     /**
@@ -57,70 +52,56 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        if( !$product = $this->product->find($id))
-
-           return response()->json(['error'=> 'product_not_found']);
-
-        return response()->json(['data' => $product]);
-    }
-
-      /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //Validaçao
-        $data = $request->all();
-
-        $validate =  validator($data, $this->product->rules($id));
-
-        if( $validate->fails() )
-        {
-            $messages = $validate->errors();
-            return response()->json(['validate.error', $messages]);
-        }
-        //Recuperando o Produto pelo id "se não encontrado retorno a msg"
-        if( !$product = $this->product->find($id))
-        return response()->json(['error'=> 'product_not_found']);
-
-        //Editar os dados de acordo com a variável data.
-        if( !$update = $product->update($data))
-            return response()->json(['error'=> 'product_not_update'], 500);
-        return response()->json(['response' => $update]);
-
-
+        $productService = $this->productService->show($id);
+        return response()->json(['data' => $productService]);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @param Request $request
+     * @param mixed $id
+     * @return JsonResponse
+     * @throws BindingResolutionException
      */
-    public function destroy(string $id)
+    public function update(Request $request,  $id)
     {
-        //Recuperando o Produto pelo id "se não encontrado retorno a msg"
-        if( !$product = $this->product->find($id))
-        return response()->json(['error'=> 'product_not_found']);
-        //$delete = $product->delete();
-
-        if( !$delete = $product->delete())
-        return response()->json(['error'=> 'product_not_delete'], 500);
-    return response()->json(['response' => $delete]);
+        $data = $request->all();
+        // // Retorna os produtos encontrados
+        // return response()->json(['data' => $request]);
+        $productService = $this->productService->update($request, $id);
+        return response()->json(['data' => $productService]);
     }
 
+    /**
+     * @param Request $request
+     * @param string $id
+     * @return JsonResponse
+     * @throws BindingResolutionException
+     */
+    public function destroy(Request $request, string $id)
+    {
+        //$data = $request->all();
+
+        $productService = $this->productService->destroy($id, $request);
+        return response()->json(['data' => $productService]);;
+    }
+
+    /**
+     * @param BuscarProdutoRequest $request
+     * @return JsonResponse
+     * @throws BindingResolutionException
+     */
     public function search(BuscarProdutoRequest $request)
     {
         // Obter todos os dados da solicitação
         $data = $request->all();
-
         // Realiza a busca dos produtos
         // $products = $this->product->search(data: $data, totalPage: $this->totalPage, page: 1);
-        
+
         // $productService = new ProductService();
         // $products = $productService->search(data: $data, totalPage: $this->totalPage, page: 1);
 
-
-
         // Retorna os produtos encontrados
-        return response()->json(['data' => $products]);
+        return response()->json(['data' => $request]);
     }
 
 }
