@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /** @package App\Http\Requests */
-class CadastroProdutoRequest extends FormRequest
+class BuscarUnityRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,11 +20,10 @@ class CadastroProdutoRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules()
+    public function rulesSearch(): array
     {
         return [
-            'name'        => "required|min:3|max:100|unique:products",
-            'description' => 'required|min:3|max:1500'
+            'key-search' => array('required')
         ];
     }
 

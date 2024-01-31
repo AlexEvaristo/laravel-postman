@@ -5,46 +5,50 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BuscarProdutoRequest;
 use App\Http\Requests\AtualizaProdutoRequest;
+use App\Http\Requests\BuscarUnityRequest;
+use App\Http\Requests\BuscaUnityRequest;
 use App\Http\Requests\CadastroProdutoRequest;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
-use App\Models\Products;
-use App\Services\ProductService;
+use App\Models\Unity;
+use App\Services\UnityService;
+use App\Services\UnitytServiceService;
 use Illuminate\Http\JsonResponse;
 
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\search;
 
-class ProductController extends Controller
+class UnityController extends Controller
 {
-    private ProductService $productService;
+    private UnityService $unityService;
     private int $totalPage = 5;
 
+
     /**
-     * @param ProductService $product 
-     * @return void 
+     * @param App\Http\Controllers\Api\V1\UnityService $unity
+     * @return void
      */
-    public function __construct(ProductService $product)
+    public function __construct(UnityService $unity)
     {
-        $this->productService = $product;
+        $this->unityService = $unity;
     }
     /**
      * Exibir todos os Produtos.
      */
-    public function index(BuscarProdutoRequest $request)
+    public function index(BuscarUnityRequest $request)
     {
         //limitando a quantidade de Página que poderão ser abertas
-        $productService = $this->productService->index();
-        return response()->json(['data' => $productService]);
+        $unityService = $this->unityService->index();
+        return response()->json(['data' => $unityService]);
     }
 
       /**
      * Armazene um recurso recém-criado.
      */
-    public function store(CadastroProdutoRequest $request)
+    public function store(Request $request)
     {
-        $productService = $this->productService->store($request->all());
-        return response()->json(['data' => $productService]);
+        $unityService = $this->unityService->store($request);
+        return response()->json(['data' => $unityService]);
     }
 
     /**
@@ -52,8 +56,8 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        $productService = $this->productService->show($id);
-        return response()->json(['data' => $productService]);
+        $unityService = $this->unityService->show($id);
+        return response()->json(['data' => $unityService]);
     }
 
     /**
@@ -62,15 +66,12 @@ class ProductController extends Controller
      * @return JsonResponse
      * @throws BindingResolutionException
      */
-    public function update(AtualizaProdutoRequest $request,  $id)
+    public function update(Request $request,  $id)
     {
         $data = $request->all();
-        // // Retorna os produtos encontrados
-        // return response()->json(['data' => $request]);
-        $productService = $this->productService->update($data, $id);
-        return response()->json(['data' => $productService]);
+        $unityService = $this->unityService->update($id, $request);
+        return response()->json(['data' => $unityService]);
     }
-
     /**
      * @param Request $request
      * @param string $id
@@ -81,8 +82,8 @@ class ProductController extends Controller
     {
         //$data = $request->all();
 
-        $productService = $this->productService->destroy($id, $request);
-        return response()->json(['data' => $productService]);;
+        $unityService = $this->unityService->destroy($id, $request);
+        return response()->json(['data' => $unityService]);;
     }
 
     /**

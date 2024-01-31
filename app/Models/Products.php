@@ -4,6 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Thomisticus\NestedAttributes\Traits\HasNestedAttributes;
+use App\Traits\AuthTrait;
+use Auth;
+
 
 /**
  * @package App\Models
@@ -12,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $description
  * @property Date $created_at
  * @property Date $updated_at
+ * @property
  */
 class Products extends Model
 {
@@ -19,13 +28,8 @@ class Products extends Model
         'name',
         'description'
     ];
-    
-    
-
-    // public function rulesSearch()
-    // {
-    //     return [
-    //         'key-search' => 'required',
-    //     ];
-    // }
+    public function unity()
+    {
+        return $this->belongsTo(Unity::class);
+    }
 }
