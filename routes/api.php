@@ -9,7 +9,11 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\Api\V1'], f
 
     Route::post('products/search', 'ProductController@search')->name('products.search');
     Route::resource('products', 'ProductController', ['except' => ['create', 'edit']]);
+
     Route::post('unities/search', 'UnityController@search')->name('unities.search');
     Route::resource('unities', 'UnityController', ['except' => ['create', 'edit']]);
+
+    Route::post('categories/search', 'CategoryController@search')->name('categories.search');
+    Route::resource('categories', 'CategoryController', ['except' => ['create', 'edit']]);
 
 });

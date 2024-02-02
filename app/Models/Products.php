@@ -32,4 +32,17 @@ class Products extends Model
     {
         return $this->belongsTo(Unity::class);
     }
+
+    /** @return mixed  */
+    public function categories() {
+        return $this->belongsToMany(Category::class, 'category_product', 'product_id',
+                                    'category_id')->withTimestamps();
+        //return $this->belongsToMany(CategoryProduct::class);
+    }
+
+    // // Gerenciar IDS das categorias
+    // $product = new Product();
+    // $product->categories->attach(1) - ADicionar
+    // $product->categories->dettach() - Excluir
+    // $product->categories->sync([...])
 }

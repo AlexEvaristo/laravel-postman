@@ -1,7 +1,8 @@
 <?php
 namespace App\Services;
 
-use App\Http\Requests\CadastroProdutoRequest;
+use App\Http\Requests\CadastroCategoryRequest;
+use App\Models\Category;
 use App\Models\Products;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -12,14 +13,14 @@ use function Pest\Laravel\json;
 use function PHPUnit\Framework\returnSelf;
 
 /** @package App\Services */
-class ProductService {
+class CategoryService {
 
-    protected Products $product;
-    // protected CadastroProdutoRequest $cadProdutoRequest;
+    protected Category $category;
+    // protected CadastroCategoryRequest $cadCategoryRequest;
 
     public function __construct() {
-        $this->product = new Products();
-        // $this->cadProdutoRequest = new CadastroProdutoRequest();
+        $this->category = new Category();
+        // $this->cadCategoryRequest = new CadastroCategoryRequest();
     }
 
     /**
@@ -28,8 +29,8 @@ class ProductService {
      */
     public function index()
     {
-        $products =  $this->product->all();
-        return response()->json(['data' => $products ]);
+        $categories =  $this->category->all();
+        return response()->json(['data' => $categories ]);
 
     }
 /**
@@ -45,7 +46,7 @@ public function store(array $request)
 //     return response()->json(['validate.error', $messages]);
 
 
-    $insert = $this->product->create($request->all());
+    $insert = $this->category->create($request->all());
 
     if(!$insert){
     return response()->json(['error'=> 'Erro ao inserir'], 500);
@@ -60,10 +61,10 @@ public function store(array $request)
  */
 public function show($id)
     {
-        $product =  $this->product->find($id);
-        if(!$product)
+        $category =  $this->category->find($id);
+        if(!$category)
         return response()->json(['error' => 'Produto Não Encontrado']);
-        return  response()->json(['data' => $product]);
+        return  response()->json(['data' => $category]);
     }
 
     /**
@@ -81,18 +82,14 @@ public function show($id)
         //        return response()->json(['validate.error', $messages]);
 
         //Se  o Produto nao for encontrado.
-        $product =  $this->product->find($id);
-        if(!$product)
+        $category =  $this->category->find($id);
+        if(!$category)
         return response()->json(['error' => 'Produto Não Encontrado']);
 
         //Se  ocorrer algum erro ao atualizar o Produto.
-        $update = $product->update($data);
-        
-        $categories = $request['categories'];
-        // sync
-
+        $update = $category->update($data);
         if( !$update )
-        return response()->json(['error' => 'Produto Não Atualizado', 500]);
+        return response()->json(['error' => 'Categoria Não Atualizada', 500]);
         return response()->json(['response' => $update]);
 
     }
@@ -101,16 +98,16 @@ public function show($id)
     {
         //$data = $request->all();
          //Se  o Produto nao for encontrado.
-         $product =  $this->product->find($id);
-         if(!$product)
-         return response()->json(['error' => 'Produto Não Encontrado']);
+         $category =  $this->category->find($id);
+         if(!$category)
+         return response()->json(['error' => 'Categoria  Não Encontrado']);
 
-         $delete = $product->delete();
+         $delete = $category->delete();
 
-         //Se  ocorrer algum erro ao atualizar o Produto.
-        $delete = $product->delete();
+         //Se  ocorrer algum erro ao atualizar a Categoria.
+        $delete = $category->delete();
         if( !$delete )
-        return response()->json(['error' => 'Produto Não Excluído', 500]);
+        return response()->json(['error' => 'Categoria Não Excluída', 500]);
         return response()->json(['response' => $delete]);
 
 
