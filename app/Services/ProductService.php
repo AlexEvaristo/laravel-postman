@@ -2,11 +2,14 @@
 namespace App\Services;
 
 use App\Http\Requests\CadastroProdutoRequest;
+use App\Models\Category;
+use App\Models\CategoryProduct;
 use App\Models\Products;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Support\ValidatedData;
 use Illuminate\Http\Request;
+use App\Models\Productcategories;
 
 use function Pest\Laravel\json;
 use function PHPUnit\Framework\returnSelf;
@@ -45,7 +48,7 @@ public function store(array $request)
 //     return response()->json(['validate.error', $messages]);
 
 
-    $insert = $this->product->create($request->all());
+    $insert = $this->product->create($request);
 
     if(!$insert){
     return response()->json(['error'=> 'Erro ao inserir'], 500);
@@ -72,14 +75,8 @@ public function show($id)
      * @return JsonResponse
      * @throws BindingResolutionException
      */
-    public function update(array $request, string $id)
+    public function update(array $data, string $id)
     {
-       $data = $request;
-        //  $validade = Validator($data, $this->product->rules($id));
-        //    if( $validade->fails())
-        //        $messages =  $validade->getMessageBag();
-        //        return response()->json(['validate.error', $messages]);
-
         //Se  o Produto nao for encontrado.
         $product =  $this->product->find($id);
         if(!$product)
@@ -87,9 +84,19 @@ public function show($id)
 
         //Se  ocorrer algum erro ao atualizar o Produto.
         $update = $product->update($data);
-        
-        $categories = $request['categories'];
-        // sync
+
+        $categories = $data['categories'];
+
+        $listar_categorias_enviadas = explode(',', $data['categories']);
+
+        //Método Sync - Sincronizaçao
+        //$product->categories()->sync($listar_categorias_enviadas);
+
+        //Método Attach
+        //$product->categories()->attach($listar_categorias_enviadas);
+
+        //Método Detach
+        $product->categories()->detach($listar_categorias_enviadas);
 
         if( !$update )
         return response()->json(['error' => 'Produto Não Atualizado', 500]);
@@ -97,7 +104,12 @@ public function show($id)
 
     }
 
-    public function destroy($id)
+    /**
+     * @param int $id
+     * @return JsonResponse
+     * @throws BindingResolutionException
+     */
+    public function destroy(array $data, $request, int $id)
     {
         //$data = $request->all();
          //Se  o Produto nao for encontrado.
@@ -105,13 +117,18 @@ public function show($id)
          if(!$product)
          return response()->json(['error' => 'Produto Não Encontrado']);
 
-         $delete = $product->delete();
 
-         //Se  ocorrer algum erro ao atualizar o Produto.
-        $delete = $product->delete();
+         $listar_categorias_enviadas = explode(',', $data['categories']);
+         //Método Detach
+         $product->categories()->detach($listar_categorias_enviadas);
+
+        //Se  ocorrer algum erro ao atualizar o Produto.
+        $delete = $product->delete($data);
         if( !$delete )
         return response()->json(['error' => 'Produto Não Excluído', 500]);
         return response()->json(['response' => $delete]);
+
+
 
 
     }

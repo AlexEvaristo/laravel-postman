@@ -46,7 +46,7 @@ public function store(array $request)
 //     return response()->json(['validate.error', $messages]);
 
 
-    $insert = $this->category->create($request->all());
+    $insert = $this->category->create($request);
 
     if(!$insert){
     return response()->json(['error'=> 'Erro ao inserir'], 500);
@@ -109,8 +109,6 @@ public function show($id)
         if( !$delete )
         return response()->json(['error' => 'Categoria Não Excluída', 500]);
         return response()->json(['response' => $delete]);
-
-
     }
 
     /**

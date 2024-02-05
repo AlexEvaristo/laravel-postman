@@ -62,7 +62,7 @@ class ProductController extends Controller
      * @return JsonResponse
      * @throws BindingResolutionException
      */
-    public function update(AtualizaProdutoRequest $request,  $id)
+    public function update(AtualizaProdutoRequest $request,  int $id)
     {
         $data = $request->all();
         // // Retorna os produtos encontrados
@@ -77,11 +77,11 @@ class ProductController extends Controller
      * @return JsonResponse
      * @throws BindingResolutionException
      */
-    public function destroy(Request $request, string $id)
+    public function destroy(array $data, $request, int $id)
     {
         //$data = $request->all();
 
-        $productService = $this->productService->destroy($id, $request);
+        $productService = $this->productService->destroy($data, $request,  $id);
         return response()->json(['data' => $productService]);;
     }
 

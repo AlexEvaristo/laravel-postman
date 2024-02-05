@@ -20,8 +20,11 @@ class AtualizaProdutoRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules($id = '')
+    public function rules()
     {
+        $rota_parametros = $this->route()->parameters();
+        $id = $rota_parametros['product'];
+
         return [
             'name'        => "required|min:3|max:100|unique:products,name,{$id},id",
             'description' => 'required|min:3|max:1500'
