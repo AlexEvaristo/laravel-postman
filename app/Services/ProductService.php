@@ -89,19 +89,26 @@ public function show($id)
 
         $listar_categorias_enviadas = explode(',', $data['categories']);
 
+         //Método Attach
+        $product->categories()->attach($listar_categorias_enviadas);
+
+        $listar_categorias_enviadas = explode(',', $data['categories']);
+
+         // Chame o método detach no relacionamento 'categories' do produto
+        //$product->categories()->detach('categories');
+
+         //Método Detach
+         $product->categories()->detach($listar_categorias_enviadas);
+
         //Método Sync - Sincronizaçao
         //$product->categories()->sync($listar_categorias_enviadas);
 
-        //Método Attach
-        //$product->categories()->attach($listar_categorias_enviadas);
-
         //Método Detach
-        $product->categories()->detach($listar_categorias_enviadas);
+        //$product->categories()->detach($listar_categorias_enviadas);
 
         if( !$update )
         return response()->json(['error' => 'Produto Não Atualizado', 500]);
         return response()->json(['response' => $update]);
-
     }
 
     /**
@@ -109,28 +116,20 @@ public function show($id)
      * @return JsonResponse
      * @throws BindingResolutionException
      */
-    public function destroy(array $data, $request, int $id)
+    public function destroy(int $id)
     {
-        //$data = $request->all();
-         //Se  o Produto nao for encontrado.
+        //Se  o Produto nao for encontrado.
          $product =  $this->product->find($id);
          if(!$product)
          return response()->json(['error' => 'Produto Não Encontrado']);
-
-
-         $listar_categorias_enviadas = explode(',', $data['categories']);
-         //Método Detach
-         $product->categories()->detach($listar_categorias_enviadas);
-
         //Se  ocorrer algum erro ao atualizar o Produto.
-        $delete = $product->delete($data);
+
+        $product->categories()->sync([]);
+
+        $delete = $product->delete();
         if( !$delete )
         return response()->json(['error' => 'Produto Não Excluído', 500]);
         return response()->json(['response' => $delete]);
-
-
-
-
     }
 
     /**

@@ -102,6 +102,7 @@ public function show($id)
          if(!$category)
          return response()->json(['error' => 'Categoria  Não Encontrado']);
 
+        $category->categories()->detach('categories');
          $delete = $category->delete();
 
          //Se  ocorrer algum erro ao atualizar a Categoria.

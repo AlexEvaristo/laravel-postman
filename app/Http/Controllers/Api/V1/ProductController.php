@@ -21,8 +21,8 @@ class ProductController extends Controller
     private int $totalPage = 5;
 
     /**
-     * @param ProductService $product 
-     * @return void 
+     * @param ProductService $product
+     * @return void
      */
     public function __construct(ProductService $product)
     {
@@ -77,11 +77,9 @@ class ProductController extends Controller
      * @return JsonResponse
      * @throws BindingResolutionException
      */
-    public function destroy(array $data, $request, int $id)
+    public function destroy(int $id)
     {
-        //$data = $request->all();
-
-        $productService = $this->productService->destroy($data, $request,  $id);
+        $productService = $this->productService->destroy($id);
         return response()->json(['data' => $productService]);;
     }
 
